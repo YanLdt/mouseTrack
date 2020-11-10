@@ -5,7 +5,7 @@ public class mouse_position {
 	
 	public interface USER32 extends StdCallLibrary{
 		USER32 INSTANCE = (USER32) Native.loadLibrary("user32", USER32.class);
-		boolean GetCursorPos(int[] coor);
+		boolean getCursorPos(int[] coor);
 		}
 
 	public static void main(String[] args) {
@@ -17,7 +17,7 @@ public class mouse_position {
 				}catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
-		 USER32.INSTANCE.GetCursorPos(pointer);//获取当前鼠标位置
+		 USER32.INSTANCE.getCursorPos(pointer);//获取当前鼠标位置
 		 System.out.println(pointer[0]+"---"+pointer[1]);
 		 }
 	}

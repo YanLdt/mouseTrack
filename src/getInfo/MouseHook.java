@@ -1,9 +1,6 @@
 package getInfo;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,6 +13,10 @@ import com.sun.jna.examples.win32.W32API.HMODULE;
 import com.sun.jna.examples.win32.W32API.LRESULT;
 import com.sun.jna.examples.win32.W32API.WPARAM;
 import com.sun.jna.examples.win32.User32.HOOKPROC;
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 
 /**
  * @author ly
@@ -40,6 +41,7 @@ public class MouseHook implements Runnable {
     final static User32 LIB = User32.INSTANCE;
     private static boolean[] onOff = null;
     private static String test;
+    private static File file;
 
     private static double xStart;
     private static double yStart;
@@ -47,9 +49,10 @@ public class MouseHook implements Runnable {
     private static double xEnd;
     private static double yEnd;
 
-    public MouseHook(boolean[] onOff, String num) {
+    public MouseHook(boolean[] onOff, String num, File file) {
         this.onOff = onOff;
         this.test = num;
+        this.file = file;
     }
 
     public interface LowLevelMouseProc extends HOOKPROC {
@@ -61,7 +64,6 @@ public class MouseHook implements Runnable {
                 Structure.ByReference {
         }
 
-        ;
         public User32.POINT pt;
         public int wHitTestCode;
         public User32.ULONG_PTR dwExtraInfo;
@@ -74,6 +76,7 @@ public class MouseHook implements Runnable {
             @Override
             public LRESULT callback(int nCode, WPARAM wParam,
                                     MOUSEHOOKSTRUCT info) {
+                /*
                 SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
                 SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String fileName = df1.format(new Date());
@@ -86,6 +89,7 @@ public class MouseHook implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                */
                 if (!onOff[0]) {
                     System.exit(0);
                 }
@@ -93,24 +97,45 @@ public class MouseHook implements Runnable {
                     switch (wParam.intValue()) {
                         default:
                             break;
-                            //左键按下  记录起点坐标
+                        //左键按下  记录起点坐标
                         case MouseHook.WM_LBUTTONDOWN:
                             xStart = info.pt.x;
                             yStart = info.pt.y;
                             break;
-                            //左键抬起，记录终点坐标
+                        //左键抬起，记录终点坐标
                         case MouseHook.WM_LBUTTONUP:
-                            try {
-                                xEnd = info.pt.x;
-                                yEnd = info.pt.y;
-                                //当前后两次坐标不等时才做记录
-                                if (xStart != xEnd && yStart != yEnd) {
-                                    double k = (yEnd - yStart) / (xEnd - xStart);
-                                    System.out.println("=============down===============");
-                                    System.out.println("left down   " + "x = " + xStart + "    " + "y = " + yStart);
-                                    System.out.println("left up   " + "x = " + xEnd + "    " + "y = " + yEnd);
-                                    System.out.println("k= " + k);
-                                    System.out.println("=========up==========");
+
+                            xEnd = info.pt.x;
+                            yEnd = info.pt.y;
+                            double k = (yEnd - yStart) / (xEnd - xStart);
+                            //当前后两次坐标不等时才做记录
+                            if (xStart != xEnd && yStart != yEnd) {
+                                try {
+                                    Workbook book = Workbook.getWorkbook(file);
+                                    WritableWorkbook workbook = Workbook.createWorkbook(file, book);
+                                    WritableSheet sheet = workbook.getSheet(0);
+                                    int rowIndex = sheet.getRows();
+                                    Label label = null;
+                                    String[] value = new String[]{test, String.valueOf(xStart), String.valueOf(yStart)
+                                            , String.valueOf(xEnd), String.valueOf(yEnd)
+                                            , String.format("%4f", k)};
+                                    for (int i = 0; i < 6; i++) {
+                                        label = new Label(i, rowIndex, String.valueOf(value[i]));
+                                        sheet.addCell(label);
+                                    }
+                                    workbook.write();
+                                    workbook.close();
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                System.out.println("=============down===============");
+                                System.out.println("left down   " + "x = " + xStart + "    " + "y = " + yStart);
+                                System.out.println("left up   " + "x = " + xEnd + "    " + "y = " + yEnd);
+                                System.out.println("k= " + k);
+                                System.out.println("=========up==========");
+                                    /*
                                     bw1.write(time + "  ####left down " + "x=" + xStart
                                             + " y=" + yStart + "\r\n");
                                     bw1.write(time + "  ####left up  " + "x=" + xEnd
@@ -118,7 +143,8 @@ public class MouseHook implements Runnable {
                                     bw1.write(time + " #### k = " + k + "\r\n");
                                     bw1.write("=============up===============" + "\r\n");
                                     bw1.flush();
-                                }
+                                    */
+                            }
 //                                double k = (yEnd - yStart) / (xEnd - xStart);
 //                                System.out.println("left up   " + "x = " + xEnd + "    " + "y = " + yEnd);
 //                                System.out.println("k= " + k);
@@ -128,9 +154,7 @@ public class MouseHook implements Runnable {
 //                                bw1.write(time + " #### k = " + k + "\r\n");
 //                                bw1.write("=============up===============" + "\r\n");
 //                                bw1.flush();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+
                             break;
                     }
                 }

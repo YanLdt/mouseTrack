@@ -17,7 +17,7 @@ public class mouse_position {
 				}catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
-		 USER32.INSTANCE.getCursorPos(pointer);//»ñÈ¡µ±Ç°Êó±êÎ»ÖÃ
+		 USER32.INSTANCE.getCursorPos(pointer);//ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 		 System.out.println(pointer[0]+"---"+pointer[1]);
 		 }
 	}

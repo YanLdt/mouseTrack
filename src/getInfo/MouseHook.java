@@ -41,6 +41,8 @@ public class MouseHook implements Runnable {
     final static User32 LIB = User32.INSTANCE;
     private static boolean[] onOff = null;
     private static String test;
+    private static String shape;
+    private static String mode;
     private static File file;
 
     private static double xStart;
@@ -49,9 +51,11 @@ public class MouseHook implements Runnable {
     private static double xEnd;
     private static double yEnd;
 
-    public MouseHook(boolean[] onOff, String num, File file) {
+    public MouseHook(boolean[] onOff, String[] params, File file) {
         this.onOff = onOff;
-        this.test = num;
+        this.test = params[0];
+        this.shape = params[1];
+        this.mode = params[2];
         this.file = file;
     }
 
@@ -118,8 +122,8 @@ public class MouseHook implements Runnable {
                                     Label label = null;
                                     String[] value = new String[]{test, String.valueOf(xStart), String.valueOf(yStart)
                                             , String.valueOf(xEnd), String.valueOf(yEnd)
-                                            , String.format("%4f", k)};
-                                    for (int i = 0; i < 6; i++) {
+                                            , String.format("%4f", k), shape, mode};
+                                    for (int i = 0; i < value.length; i++) {
                                         label = new Label(i, rowIndex, String.valueOf(value[i]));
                                         sheet.addCell(label);
                                     }

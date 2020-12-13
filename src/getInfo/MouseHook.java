@@ -47,6 +47,11 @@ public class MouseHook implements Runnable {
 
     private static double xStart;
     private static double yStart;
+    private static String startT;
+    private static String endT;
+    private static long startTime;
+    private static long endTime;
+    private static long missionTime;
 
     private static double xEnd;
     private static double yEnd;
@@ -94,6 +99,7 @@ public class MouseHook implements Runnable {
                     e.printStackTrace();
                 }
                 */
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
                 if (!onOff[0]) {
                     System.exit(0);
                 }
@@ -105,12 +111,18 @@ public class MouseHook implements Runnable {
                         case MouseHook.WM_LBUTTONDOWN:
                             xStart = info.pt.x;
                             yStart = info.pt.y;
+                            startTime = System.currentTimeMillis();
+                            startT = df.format(startTime);
+                            System.out.println(startT);
                             break;
                         //左键抬起，记录终点坐标
                         case MouseHook.WM_LBUTTONUP:
 
                             xEnd = info.pt.x;
                             yEnd = info.pt.y;
+                            endTime = System.currentTimeMillis();
+                            endT = df.format(endTime);
+                            missionTime = endTime - startTime;
                             double k = (yEnd - yStart) / (xEnd - xStart);
                             //当前后两次坐标不等时才做记录
                             if (xStart != xEnd && yStart != yEnd) {
@@ -121,8 +133,8 @@ public class MouseHook implements Runnable {
                                     int rowIndex = sheet.getRows();
                                     Label label = null;
                                     String[] value = new String[]{test, String.valueOf(xStart), String.valueOf(yStart)
-                                            , String.valueOf(xEnd), String.valueOf(yEnd)
-                                            , String.format("%4f", k), shape, mode};
+                                            , startT, String.valueOf(xEnd), String.valueOf(yEnd), endT,
+                                            String.valueOf(missionTime), String.format("%4f", k), shape, mode};
                                     for (int i = 0; i < value.length; i++) {
                                         label = new Label(i, rowIndex, String.valueOf(value[i]));
                                         sheet.addCell(label);

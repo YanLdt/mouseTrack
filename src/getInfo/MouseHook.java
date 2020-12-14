@@ -52,6 +52,7 @@ public class MouseHook implements Runnable {
     private static long startTime;
     private static long endTime;
     private static long missionTime;
+    private static double distance;
 
     private static double xEnd;
     private static double yEnd;
@@ -123,6 +124,7 @@ public class MouseHook implements Runnable {
                             endTime = System.currentTimeMillis();
                             endT = df.format(endTime);
                             missionTime = endTime - startTime;
+                            distance = Math.sqrt(Math.pow(xEnd-xStart,2) + Math.pow(yEnd-yStart,2));
                             double k = (yEnd - yStart) / (xEnd - xStart);
                             //当前后两次坐标不等时才做记录
                             if (xStart != xEnd && yStart != yEnd) {
@@ -133,7 +135,7 @@ public class MouseHook implements Runnable {
                                     int rowIndex = sheet.getRows();
                                     Label label = null;
                                     String[] value = new String[]{test, String.valueOf(xStart), String.valueOf(yStart)
-                                            , startT, String.valueOf(xEnd), String.valueOf(yEnd), endT,
+                                            , startT, String.valueOf(xEnd), String.valueOf(yEnd), endT, String.format("%.2f", distance),
                                             String.valueOf(missionTime), String.format("%4f", k), shape, mode};
                                     for (int i = 0; i < value.length; i++) {
                                         label = new Label(i, rowIndex, String.valueOf(value[i]));

@@ -23,7 +23,7 @@ import java.util.Date;
  */
 public class Monitor extends JFrame {
 
-    private static String[] title = {"Number", "StartX", "StartY", "StartTime","EndX", "EndY", "EndTime", "distance", "Time","K", "形状", "移动方式"};
+    private static String[] title = {"测试序号", "起点X", "起点Y", "开始时间","结束X", "结束Y", "结束时间", "移动距离", "移动时间","斜率K", "形状", "移动方式"};
 
     private static File file;
 
